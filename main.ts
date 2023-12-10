@@ -5,7 +5,11 @@ export default class PF2StatPlugin extends Plugin {
 		this.registerMarkdownPostProcessor((element, context) => {
 			const codeblocks = element.getElementsByTagName("code");
 			for (let codeblock of codeblocks) {
-				console.log(codeblock.className);
+				if (codeblock.parentElement === null) {
+					// TypeScript actually cares about null-checking.  Nice.
+					continue;
+				}
+			
 				if (codeblock.className !== "language-pf2e-stats") {
 					// don't mess with codeblocks without our header
 					continue;
@@ -19,7 +23,7 @@ export default class PF2StatPlugin extends Plugin {
 				const text = codeblock.innerText.trim();
 				const statblockElement = element.createEl("div", { cls: "pf2e-statblock" });
 				MarkdownRenderer.render(this.app, text, statblockElement, context.sourcePath, this);
-				codeblock.parentNode.replaceWith(statblockElement);
+				codeblock.parentElement.replaceWith(statblockElement);
 			}
 		});
 	}
