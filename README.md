@@ -52,7 +52,7 @@ You can add action icons as follows:
 
 ## Example
 
-![/images/item_example.png]
+![Item Example Formatted](/images/item_example.png)
 
 ```
 \```pf2e-stats
