@@ -6,11 +6,11 @@ Use Markdown syntax to create great-looking Pathfinder Second Edition statblocks
 
 To start an item block, create a codeblock with the language tag `pf2e-stats`, as shown:
 
-```
-\```pf2e-stats
+``
+```pf2e-stats
 [YOUR CONTENT HERE]
-\```
 ```
+``
 
 ### Name
 
@@ -54,8 +54,8 @@ You can add action icons as follows:
 
 ![Item Example Formatted](/images/item_example.PNG)
 
-```
-\```pf2e-stats
+``
+```pf2e-stats
 # Awesome Belt of Various Actions
 ## Item 25
 
@@ -88,5 +88,5 @@ This belt enables the wearer to do all kinds of different things.
 **Activate-Safety Strap** `[reaction]` Envision; **Trigger** You are falling and a ledge is within 15 feet; **Effect** The belt latches onto the ledge, stopping your fall.
 
 **Activate-Holster Throw** `[free-action]` Envision; **Trigger** You roll initiative; **Effect** The belt launches a weapon from its holster.  You Interact to draw a weapon.
-\```
 ```
+``
