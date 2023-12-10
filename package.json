@@ -1,6 +1,6 @@
 {
 	"name": "pf2e-statblock-plugin",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "This plugin allows Obsidian to render Pathfinder 2e statblocks cleanly, using only Markdown-based syntax.",
 	"main": "main.js",
 	"scripts": {
