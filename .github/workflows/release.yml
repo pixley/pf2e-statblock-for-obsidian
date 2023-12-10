@@ -7,7 +7,6 @@ on:
 
 jobs:
   build:
-	permissions: write-all
     runs-on: ubuntu-latest
 
     steps:
@@ -24,6 +23,7 @@ jobs:
           npm run build
 
       - name: Create release
+		permissions: write-all
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
