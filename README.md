@@ -26,8 +26,6 @@ In a standard statblock, traits are signified by wrapping them in double-equals 
 ==Unique== ==Medium== ==Humanoid==
 ```
 
-**Note:** Rarity and size tags currently do not get their specific coloration.
-
 For abbreviated statblocks, such as the ones for brief NPC blurbs, instead use heading 3, prefixed with a triple hash `###`
 
 ### Line Breaks
