@@ -2,7 +2,7 @@
 	"id": "pf2e-statblocks",
 	"name": "PF2e Statblocks",
 	"version": "0.1.6",
-	"minAppVersion": "1.4.16",
+	"minAppVersion": "1.4.11",
 	"description": "Allows Obsidian to render Pathfinder 2e statblocks cleanly, using only Markdown-based syntax.",
 	"author": "Tyler Pixley",
 	"authorUrl": "https://pixley.github.io",
