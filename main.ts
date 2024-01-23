@@ -2,8 +2,8 @@ import { Plugin, MarkdownRenderer } from 'obsidian';
 import { WidgetType, EditorView, Decoration, DecorationSet } from '@codemirror/view';
 import { syntaxTree, LanguageSupport, Language } from '@codemirror/language'
 import { RangeSetBuilder, Extension, StateField, Transaction, Prec } from '@codemirror/state'
-import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
-import { MarkdownConfig } from '@lezer/markdown'
+import { parser, MarkdownParser, MarkdownConfig, InlineContext } from '@lezer/markdown'
+import { tags } from '@lezer/highlight'
 
 function getColorForTraitTag(trait: string): string {
 	const traitLower = trait.trim().toLowerCase();
@@ -23,41 +23,54 @@ function getColorForTraitTag(trait: string): string {
 	return "var(--normal-trait)";
 }
 
-// Helper class for the 
+// Helper class for accumulating the contents of each code block
 class StatBlockCodeBlock {
 	codeText: string = "";
 	locationInDoc: number = -1;		// offset from the beginning of the document that this block starts
 }
+// Helper class for accumulating decorations to be added to the builder
+class DecorationInfo {
+	decor: Decoration;
+	start: number;
+	end: number;
 
-// Punctuation is copied directly from @lezer/markdown/markdown.ts because the module doesn't export it
-let Punctuation = /[!"#$%&'()*+,\-.\/:;<=>?@\[\\\]^_`{|}~\xA1\u2010-\u2027]/
-try { Punctuation = new RegExp("[\\p{Pc}|\\p{Pd}|\\p{Pe}|\\p{Pf}|\\p{Pi}|\\p{Po}|\\p{Ps}]", "u") } catch (_) {}
+	constructor(inStart: number, inEnd: number, inDecor: Decoration) {
+		this.decor = inDecor;
+		this.start = inStart;
+		this.end = inEnd;
+	}
+}
+
+// Punctuation is copied directly from @lezer/markdown/markdown.ts because the module doesn't export it, with the addition of \p{Sm} added to cover math symbols, like equals
+let Punctuation = /[!"#$%&'()*+,\-.\/:;<=>?@\[\\\]^_`{|}~\xA1\u2010-\u2027]/;
+try { Punctuation = new RegExp("[\\p{Pc}|\\p{Pd}|\\p{Pe}|\\p{Pf}|\\p{Pi}|\\p{Po}|\\p{Ps}]\\p{Sm}", "u") } catch (_) {}
 
 // implements the "==XXX==" syntax for Markdown highlights (HTML <mark> tags)
+const HighlightDelim = {resolve: "Highlight", mark: "HighlightMark"};
 const HighlightExtension: MarkdownConfig = {
 	defineNodes: [{
-		name: "Highlight"
+		name: "Highlight",
+    	style: {"Highlight/...": tags.heading3}
 	}, {
-		name: "HighlightMark"
+		name: "HighlightMark",
+    	style: tags.processingInstruction
 	}],
 	parseInline: [{
 		name: "Highlight",
-		parse(cx, next, pos) {
+		parse(cx: InlineContext, next: number, pos: number): number {
 			if (next != 61 /* '=' */ || cx.char(pos + 1) != 61 || cx.char(pos + 2) == 61) return -1;
 			let before = cx.slice(pos - 1, pos), after = cx.slice(pos + 2, pos + 3);
 			let sBefore = /\s|^$/.test(before), sAfter = /\s|^$/.test(after);
 			let pBefore = Punctuation.test(before), pAfter = Punctuation.test(after);
-			return cx.addDelimiter({resolve: "Highlight", mark: "HighlightMark"}, pos, pos + 2,
+			return cx.addDelimiter(HighlightDelim, pos, pos + 2,
 				!sAfter && (!pAfter || sBefore || pBefore),
 				!sBefore && (!pBefore || sAfter || pAfter));
-		}
-	}]
+		},
+		before: "Emphasis"
+	}],
 }
-const extendedMarkdown: LanguageSupport = markdown({
-	base: markdownLanguage,
-	extensions: HighlightExtension,
-	addKeymap: false
-})
+// Packages the highlight extension into a Lezer language
+const extendedMarkdown: MarkdownParser = parser.configure(HighlightExtension);
 
 // widget that adds in-line action icon for live update
 class ActionWidget extends WidgetType {
@@ -69,7 +82,13 @@ class ActionWidget extends WidgetType {
 
 	toDOM(view: EditorView): HTMLElement {
 		const div = document.createElement("span");
-		div.innerText = this.actionText;
+		if (this.actionText === "[reaction]" || this.actionText === "[free-action]" || this.actionText == "[one-action]" || this.actionText === "[two-actions]" || this.actionText === "[three-actions]") {
+			div.innerText = this.actionText;
+			div.className = "pf2e-statblock-live-action";
+		} else {
+			div.innerText = "???"
+			div.className = "pf2e-statblock-live-error";
+		}
 		return div;
 	}
 }
@@ -82,8 +101,6 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 		return Decoration.none;
 	},
 	update(oldState: DecorationSet, transaction: Transaction): DecorationSet {
-		const builder = new RangeSetBuilder<Decoration>();
-
 		let insideStatBlock: boolean = false;
 		let lastLineEnd: number = -1;
 		let codeBlocks: Array<StatBlockCodeBlock> = new Array<StatBlockCodeBlock>();
@@ -138,83 +155,147 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 			},
 		});
 
+		let decorationInfos: Array<DecorationInfo> = new Array<DecorationInfo>();
+
 		for (let codeBlock of codeBlocks) {
 			const blockStart: number = codeBlock.locationInDoc;
 			const blockEnd: number = blockStart + codeBlock.codeText.length;
 
+			/*
 			// give the whole thing our live statblock class
 			builder.add(blockStart, blockEnd, Decoration.mark({
 				inclusiveStart: true,
-				class: "pf2e-statblock.live"
+				class: "pf2e-statblock-live",
+				tagName: "div"
 			}));
+			*/
 
-			const codeBlockParseTree = extendedMarkdown.language.parser.parse(codeBlock.codeText);
+			const codeBlockParseTree = extendedMarkdown.parse(codeBlock.codeText);
 			codeBlockParseTree.iterate({
 				enter(node: any): boolean {
-					let parsedTag: string = "";
-					let allowChildParse: boolean = true;
+					const nodeStart: number = blockStart + node.from;
+					const nodeEnd: number = blockStart + node.to;
+
+					let allowChildParse: boolean = true;	// Some nodes really don't need to have styling applied inside, so we won't bother parsing their child nodes.
+					let startBias: number = 0;	// Application priority for decorations starting at the same position
+					let markAttributes: { [key: string]: string; } = {};
+					let elementClass: string = "pf2e-statblock-live";
+					// apply HTML tags depending on the Markdown syntax
 					switch(node.type.name) {
+						case "Document": {
+							return true;
+						}
 						case "ATXHeading1": {
-							parsedTag = "h1";
+							elementClass += "-h1";
 							allowChildParse = false;
 							break;
 						}
 						case "ATXHeading2": {
-							parsedTag = "h2";
+							elementClass += "-h2";
 							allowChildParse = false;
 							break;
 						}
 						case "ATXHeading3": {
-							parsedTag = "h3";
+							elementClass += "-h3";
 							allowChildParse = false;
 							break;
 						}
 						case "Paragraph": {
-							parsedTag = "p";
+							elementClass += "-p";
+							startBias = -1;
 							break;
 						}
 						case "Emphasis": {
-							parsedTag = "i";
+							elementClass += "-i";
+							startBias = 1;
 							break;
 						}
 						case "StrongEmphasis": {
-							parsedTag = "b";
+							elementClass += "-b";
+							startBias = 1;
 							break;
 						}
 						case "InlineCode": {
-							parsedTag = "code";
+							elementClass += "-actionSource"
+							startBias = 2;
 							allowChildParse = false;
+							// if the code block is too small, then don't bother with it
+							if (node.to - node.from < 4) {
+								return false;
+							}
 							// in the context of the node, the actual action text is flanked by "`[" and "]`"
-							const actionText = codeBlock.codeText.slice(node.from + 2, node.to - 2);
-							builder.add(blockStart + node.to, blockStart + node.to, Decoration.widget({
+							const actionText = codeBlock.codeText.slice(node.from + 1, node.to - 1);
+							// we want to inject an action icon after the code block
+							decorationInfos.push(new DecorationInfo(nodeEnd, nodeEnd, Decoration.widget({
 								widget: new ActionWidget(actionText)
-							}))
+							})));
 							break;
 						}
 						case "Highlight": {
-							parsedTag = "mark";
+							elementClass += "-mark";
+							startBias = 1;
 							allowChildParse = false;
 							// in the context of the node, the actual trait text is flanked by "=="s
 							const traitText: string = codeBlock.codeText.slice(node.from + 2, node.to - 2);
 							const traitColor: string = getColorForTraitTag(traitText);
-							builder.add(blockStart + node.from, blockStart + node.to, Decoration.mark({
-								attributes: {"color": traitColor}
-							}));
+							const traitStyle: string = "background: " + traitColor;
+							markAttributes = {"style": traitStyle};
+							break;
+						}
+						case "ListItem": {
+							elementClass += "-li";
+							startBias = -1;
+							break;
+						}
+						case "BulletList": {
+							elementClass += "-ul";
+							break;
+						}
+						case "OrderedList": {
+							elementClass += "-ol";
 							break;
 						}
 						default: {
 							return false;
 						}
 					}
-					builder.add(blockStart + node.from, blockStart + node.to, Decoration.mark({
-						inclusiveStart: true,
-						tagName: parsedTag,
-					}));
+					try {
+						let markDecoration: Decoration = Decoration.mark({
+							inclusiveStart: true,
+							class: elementClass,
+							attributes: markAttributes
+						});
+						markDecoration.startSide = startBias;
+						decorationInfos.push(new DecorationInfo(nodeStart, nodeEnd, markDecoration));
+					} catch (error) {
+						console.log("Error adding decoration for node type " + node.type.name);
+						console.error(error);
+					}
 					return allowChildParse;
 				},
 			});
 		}
 
+		// RangeSetBuilder requires that Decorations be added in-order,
+		// but ensuring that sorting happens ahead of time is too much of a hassle,
+		// so that's why we used the decorationInfos array, and now we're sorting.
+		decorationInfos.sort((a: DecorationInfo, b: DecorationInfo) => {
+			if (a.start < b.start) {
+				return -1;
+			} else if (a.start > b.start) {
+				return 1;
+			} else if (a.decor.startSide <= b.decor.startSide) {
+				return -1
+			} else {
+				return 1;
+			}
+		});
+
+		const builder = new RangeSetBuilder<Decoration>();
+		for (let decorationInfo of decorationInfos) {
+			console.log("Decoration for \"" + transaction.newDoc.sliceString(decorationInfo.start, decorationInfo.end) + "\" added: " + JSON.stringify(decorationInfo.decor.spec));
+			builder.add(decorationInfo.start, decorationInfo.end, decorationInfo.decor);
+		}
 		return builder.finish();
 	},
 	provide(field: StateField<DecorationSet>): Extension {

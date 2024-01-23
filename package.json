@@ -1,6 +1,6 @@
 {
 	"name": "pf2e-statblock-plugin",
-	"version": "0.1.6",
+	"version": "0.1.7",
 	"description": "Allows Obsidian to render Pathfinder 2e statblocks cleanly, using only Markdown-based syntax.",
 	"main": "main.js",
 	"scripts": {
@@ -12,7 +12,7 @@
 	"author": "Tyler Pixley",
 	"license": "MIT",
 	"devDependencies": {
-		"@types/node": "20.11.5",
+		"@types/node": "^20.11.5",
 		"@typescript-eslint/eslint-plugin": "6.19.0",
 		"@typescript-eslint/parser": "6.19.0",
 		"builtin-modules": "3.3.0",
@@ -22,6 +22,6 @@
 		"typescript": "5.3.3"
 	},
 	"dependencies": {
-		"@codemirror/lang-markdown": "6.2.4"
+		"@lezer/markdown": "^1.2.0"
 	}
 }
