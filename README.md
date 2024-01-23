@@ -100,3 +100,12 @@ This product is licensed under the ORC License held in the Library of Congress a
 **Reserved Material** This product contains no Reserved Material.
 
 **Expressly Designated Licensed Material** This product contains no Expressly Designated Licensed Material.
+
+## Code License Notices
+
+PF2e Statblocks for Obsidian's code is licensed under an [MIT License](https://github.com/pixley/pf2e-statblock-for-obsidian/blob/main/LICENSE.txt).
+
+This plugin includes the following modules as packaged code, licensed under MIT Licenses:
+
+- lezer-markdown: Copyright (C) 2020 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+- @codemirror/language: Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
