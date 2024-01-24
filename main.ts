@@ -5,22 +5,22 @@ import { RangeSetBuilder, Extension, StateField, Transaction, Prec } from '@code
 import { parser, MarkdownParser, MarkdownConfig, InlineContext } from '@lezer/markdown'
 import { tags } from '@lezer/highlight'
 
-function getColorForTraitTag(trait: string): string {
+function getClassForTraitTag(trait: string): string {
 	const traitLower = trait.trim().toLowerCase();
 
 	// all sizes get the same color
 	if (traitLower === "tiny" || traitLower === "small" || traitLower === "medium" ||
 		traitLower === "large" || traitLower === "huge" || traitLower === "gargantuan") {
-		return "var(--size-trait)";
+		return "pf2e-statblock-trait-size";
 	} else if (traitLower === "uncommon") {
-		return "var(--uncommon-trait)";
+		return "pf2e-statblock-trait-uncommon";
 	} else if (traitLower === "rare") {
-		return "var(--rare-trait)";
+		return "pf2e-statblock-trait-rare";
 	} else if (traitLower === "unique") {
-		return "var(--unique-trait)";
+		return "pf2e-statblock-trait-unique";
 	}
 
-	return "var(--normal-trait)";
+	return "pf2e-statblock-trait-normal";
 }
 
 // Helper class for accumulating the contents of each code block
@@ -178,7 +178,6 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 
 					let allowChildParse: boolean = true;	// Some nodes really don't need to have styling applied inside, so we won't bother parsing their child nodes.
 					let startBias: number = 0;	// Application priority for decorations starting at the same position
-					let markAttributes: { [key: string]: string; } = {};
 					let elementClass: string = "pf2e-statblock-live";
 					// apply HTML tags depending on the Markdown syntax
 					switch(node.type.name) {
@@ -237,9 +236,8 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 							allowChildParse = false;
 							// in the context of the node, the actual trait text is flanked by "=="s
 							const traitText: string = codeBlock.codeText.slice(node.from + 2, node.to - 2);
-							const traitColor: string = getColorForTraitTag(traitText);
-							const traitStyle: string = "background: " + traitColor;
-							markAttributes = {"style": traitStyle};
+							const traitColorClass: string = getClassForTraitTag(traitText);
+							elementClass += " " + traitColorClass;
 							break;
 						}
 						case "ListItem": {
@@ -262,8 +260,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 					try {
 						let markDecoration: Decoration = Decoration.mark({
 							inclusiveStart: true,
-							class: elementClass,
-							attributes: markAttributes
+							class: elementClass
 						});
 						markDecoration.startSide = startBias;
 						decorationInfos.push(new DecorationInfo(nodeStart, nodeEnd, markDecoration));
@@ -335,8 +332,8 @@ export default class PF2StatPlugin extends Plugin {
 				// these colors are captured directly from official PDFs
 				const traitTags = statblockElement.getElementsByTagName("mark");
 				for (let traitTag of traitTags) {
-					const traitColor = getColorForTraitTag(traitTag.innerText);
-					traitTag.style.backgroundColor = traitColor;
+					const traitColorClass = getClassForTraitTag(traitTag.innerText);
+					traitTag.classList.add(traitColorClass, "pf2e-statblock")
 				}
 				
 				// overwrite the code block's <pre> parent

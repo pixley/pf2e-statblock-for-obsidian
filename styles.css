@@ -77,7 +77,7 @@
 	text-transform: uppercase;
 	font-weight: bold;
 	color: white !important;
-	background: var(--normal-trait);
+	background: magenta;
 	border-color: var(--trait-border);
 	border-style: solid;
 	border-width: 0.15rem;
@@ -157,4 +157,29 @@
 
 .pf2e-statblock-live-error {
 	color: var(--error-highlight);
+}
+
+mark.pf2e-statblock-trait-normal, span.pf2e-statblock-trait-normal
+{
+	background: var(--normal-trait);
+}
+
+mark.pf2e-statblock-trait-size, span.pf2e-statblock-trait-size
+{
+	background: var(--size-trait);
+}
+
+mark.pf2e-statblock-trait-uncommon, span.pf2e-statblock-trait-uncommon
+{
+	background: var(--uncommon-trait);
+}
+
+mark.pf2e-statblock-trait-rare, span.pf2e-statblock-trait-rare
+{
+	background: var(--rare-trait);
+}
+
+mark.pf2e-statblock-trait-unique, span.pf2e-statblock-trait-unique
+{
+	background: var(--unique-trait);
 }
