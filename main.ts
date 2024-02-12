@@ -1,4 +1,4 @@
-import { Plugin, MarkdownRenderer } from 'obsidian';
+import { Plugin, MarkdownRenderer, MarkdownPostProcessorContext } from 'obsidian';
 import { WidgetType, EditorView, Decoration, DecorationSet } from '@codemirror/view';
 import { syntaxTree, LanguageSupport, Language } from '@codemirror/language'
 import { RangeSetBuilder, Extension, StateField, Transaction, Prec } from '@codemirror/state'
@@ -305,41 +305,27 @@ export default class PF2StatPlugin extends Plugin {
 		// ============
 		// Handles full rendering of the statblock in reading mode
 		// ============
-		this.registerMarkdownPostProcessor((element, context) => {
-			const codeblocks = element.getElementsByTagName("code");
-			for (let codeblock of codeblocks) {
-				if (codeblock.parentElement === null) {
-					// TypeScript actually cares about null-checking.  Nice.
-					continue;
-				}
-			
-				if (codeblock.className !== "language-pf2e-stats") {
-					// don't mess with codeblocks without our header
-					continue;
-				}
-				
-				// remove the code copy button
-				if (codeblock.nextSibling !== null) {
-					codeblock.nextSibling.remove();
-				}
-		
-				const text = codeblock.innerText.trim();
-				const statblockElement = element.createEl("div", { cls: "pf2e-statblock" });
+		this.registerMarkdownCodeBlockProcessor("pf2e-stats",
+			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
+				const statblockElement: HTMLElement = element.createEl("div", { cls: "pf2e-statblock" });
 				// parse the markdown inside this codeblock
-				MarkdownRenderer.render(this.app, text, statblockElement, context.sourcePath, this);
+				MarkdownRenderer.render(this.app, source, statblockElement, context.sourcePath, this);
 				
 				// apply special coloration to special trait tags
 				// these colors are captured directly from official PDFs
-				const traitTags = statblockElement.getElementsByTagName("mark");
-				for (let traitTag of traitTags) {
-					const traitColorClass = getClassForTraitTag(traitTag.innerText);
+				const traitTags: HTMLCollection = statblockElement.getElementsByTagName("mark");
+				for (let i = 0; i < traitTags.length; i++) {
+					const traitTag: HTMLElement = traitTags[i] as HTMLElement;
+					const traitColorClass: string = getClassForTraitTag(traitTag.innerText);
 					traitTag.classList.add(traitColorClass, "pf2e-statblock")
 				}
-				
-				// overwrite the code block's <pre> parent
-				codeblock.parentElement.replaceWith(statblockElement);
+
+				// In edit mode, prevent the code-edit button from messing with the layout
+				if (element.parentElement !== null && element.parentElement.classList.contains("cm-preview-code-block")) {
+					statblockElement.classList.add("pf2e-statblock-edit");
+				}
 			}
-		});
+		);
 
 		// ensure that the live update applies its styling at highest precedence
 		this.registerEditorExtension(Prec.highest(statBlockLiveUpdateField));

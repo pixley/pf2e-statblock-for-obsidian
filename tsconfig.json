@@ -12,6 +12,7 @@
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
     "removeComments": true,
+    "strict": true,
     "lib": [
       "DOM",
 	    "DOM.Iterable",
