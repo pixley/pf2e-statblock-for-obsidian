@@ -117,7 +117,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 				if (node.type.name.startsWith("HyperMD-codeblock_HyperMD-codeblock-begin_HyperMD-codeblock-begin-bg_HyperMD-codeblock-bg")) {
 					// This is the node that indicates the start of a codeblock
 					if (insideStatBlock) {
-						console.log("ERROR: code block starting inside a code block???");
+						console.debug("ERROR: code block starting inside a code block???");
 						return false;
 					} else if (nodeLine === "```pf2e-stats") {
 						insideStatBlock = true;
@@ -265,7 +265,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 						markDecoration.startSide = startBias;
 						decorationInfos.push(new DecorationInfo(nodeStart, nodeEnd, markDecoration));
 					} catch (error) {
-						console.log("Error adding decoration for node type " + node.type.name);
+						console.debug("Error adding decoration for node type " + node.type.name);
 						console.error(error);
 					}
 					return allowChildParse;
@@ -290,7 +290,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 
 		const builder = new RangeSetBuilder<Decoration>();
 		for (let decorationInfo of decorationInfos) {
-			console.log("Decoration for \"" + transaction.newDoc.sliceString(decorationInfo.start, decorationInfo.end) + "\" added: " + JSON.stringify(decorationInfo.decor.spec));
+			console.debug("Decoration for \"" + transaction.newDoc.sliceString(decorationInfo.start, decorationInfo.end) + "\" added: " + JSON.stringify(decorationInfo.decor.spec));
 			builder.add(decorationInfo.start, decorationInfo.end, decorationInfo.decor);
 		}
 		return builder.finish();
