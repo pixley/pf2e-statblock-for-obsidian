@@ -186,7 +186,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 						}
 						case "ATXHeading1": {
 							elementClass += "-h1";
-							allowChildParse = false;
+							// Allowing child parse here because we could have an action icon here
 							break;
 						}
 						case "ATXHeading2": {
