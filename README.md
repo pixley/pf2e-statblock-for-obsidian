@@ -107,5 +107,9 @@ PF2e Statblocks for Obsidian's code is licensed under an [MIT License](https://g
 
 This plugin includes the following modules as packaged code, licensed under MIT Licenses:
 
-- lezer-markdown: Copyright (C) 2020 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
-- @codemirror/language: Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+- [lezer-markdown](https://github.com/lezer-parser/markdown): Copyright (C) 2020 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+- [@codemirror/lang-markdown](https://github.com/codemirror/lang-markdown): Copyright (C) 2018-2021 by Marijn Haverbeke <marijn@haverbeke.berlin> and others
+
+## Font License Notices
+
+PF2e Statblocks for Obsidian embeds the Roboto and DIN Rindschrift Mittel fonts.  See font-licenses.txt for details.  It also embeds the Pathfinder Icons font, which is covered by the Paizo's Community Use Policy.
