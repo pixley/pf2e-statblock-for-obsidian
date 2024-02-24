@@ -1,7 +1,7 @@
 {
 	"id": "pf2e-statblocks",
 	"name": "PF2e Statblocks",
-	"version": "1.1.0",
+	"version": "1.2.0",
 	"minAppVersion": "1.4.16",
 	"description": "Renders Pathfinder 2e statblocks cleanly, using only Markdown-based syntax.",
 	"author": "Tyler Pixley",
