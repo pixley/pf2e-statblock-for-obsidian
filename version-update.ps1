@@ -45,7 +45,7 @@ if ((Get-Command "npm" -ErrorAction SilentlyContinue) -eq $null)
     Exit -1
 }
 
-$current_dir = Get-Location
+$current_dir = $PSScriptRoot
 
 # Check if package.json exists
 $package_json_path = Join-Path $current_dir package.json
