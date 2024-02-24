@@ -38,6 +38,13 @@ if ((Get-Command "git" -ErrorAction SilentlyContinue) -eq $null)
     Exit -1
 }
 
+# Need NPM
+if ((Get-Command "npm" -ErrorAction SilentlyContinue) -eq $null)
+{
+    Write-Error "NPM is either not installed or not in your PATH."
+    Exit -1
+}
+
 $current_dir = Get-Location
 
 # Check if package.json exists
@@ -58,7 +65,7 @@ if ($package_json_contents.Count -lt 1)
 
 # Find current version
 $version_string = ""
-$version_format_regex = '[0-9]+\.[0-9]+\.[0.9]+'
+$version_format_regex = '[0-9]+\.[0-9]+\.[0-9]+'
 $version_line = -1
 for($i = 0; $i -lt $package_json_contents.Count; $i++)
 {
