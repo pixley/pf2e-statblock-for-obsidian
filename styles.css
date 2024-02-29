@@ -79,7 +79,7 @@
 	text-transform: uppercase;
 	font-family: DIN-Rundschrift-Mittel;
 	font-weight: normal;
-	font-size: 1.4rem;
+	font-size: calc(var(--font-text-size) * 1.4);
 	line-height: 1.2rem;
 	color: var(--text-normal);
 	display: inline-block;
@@ -106,7 +106,7 @@
 
 .pf2e-statblock p {
 	font-family: Roboto;
-	font-size: 0.85rem;
+	font-size: calc(var(--font-text-size) * 0.85);
 	margin: 0;
 	line-height: 1.3;
 	text-align: justify;
@@ -126,7 +126,7 @@
 	border-width: 0.1rem;
 	border-right-width: 0.2rem;
 	border-left-width: 0.2rem;
-	font-size: 0.8rem;
+	font-size: calc(var(--font-text-size) * 0.8);
 	line-height: 1.7;
 	margin-left: -0.15rem;
 	margin-right: -0.15rem;
