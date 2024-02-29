@@ -82,8 +82,9 @@
 	font-size: calc(var(--font-text-size) * 1.4);
 	line-height: 1.2rem;
 	color: var(--text-normal);
-	display: inline-block;
+	display: inline-block !important;
 	margin: 0;
+	margin-block: 0 !important;
 }
 
 .pf2e-statblock h1 {
@@ -91,7 +92,7 @@
 }
 
 .pf2e-statblock h2 {
-	text-align: right;
+	text-align: right !important;
 	float: right;
 	transform-origin: center right;
 }
@@ -162,6 +163,12 @@
 .pf2e-statblock br {
 	content: "";
 	margin-top: 0;
+}
+
+
+/* Ensures that we don't take on unwanted styling from ITS theme */
+.pf2e-statblock h1::after, .pf2e-statblock h2::after, .pf2e-statblock h3::after, .pf2e-statblock hr::after {
+	display: none !important;
 }
 
 .pf2e-statblock-live-h1, .pf2e-statblock-live-h2 {
