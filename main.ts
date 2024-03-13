@@ -5,6 +5,10 @@ import { RangeSetBuilder, Extension, StateField, Transaction, Prec } from '@code
 import { parser, MarkdownParser, MarkdownConfig, InlineContext } from '@lezer/markdown'
 import { tags } from '@lezer/highlight'
 
+// ============
+// Helpers
+// ============
+
 function getClassForTraitTag(trait: string): string {
 	const traitLower = trait.trim().toLowerCase();
 
@@ -12,6 +16,10 @@ function getClassForTraitTag(trait: string): string {
 	if (traitLower === "tiny" || traitLower === "small" || traitLower === "medium" ||
 		traitLower === "large" || traitLower === "huge" || traitLower === "gargantuan") {
 		return "pf2e-statblock-trait-size";
+	} else if (traitLower === "lg" || traitLower === "ng" || traitLower === "cg" ||
+		traitLower === "ln" || traitLower === "n" || traitLower === "cn" ||
+		traitLower === "le" || traitLower === "ne" || traitLower === "ce") {
+		return "pf2e-statblock-trait-alignment"
 	} else if (traitLower === "uncommon") {
 		return "pf2e-statblock-trait-uncommon";
 	} else if (traitLower === "rare") {
@@ -21,6 +29,173 @@ function getClassForTraitTag(trait: string): string {
 	}
 
 	return "pf2e-statblock-trait-normal";
+}
+
+function getIndentationLevel(element: Element): number {
+	if (element == null) {
+		return 0;
+	}
+
+	const startOfIndentationClass: number = element.className.indexOf("pf2e-statblock-indent-");
+	if (startOfIndentationClass < 0) {
+		// No indentation.
+		return 0;
+	}
+
+	const levelAsString: string = element.className.charAt(startOfIndentationClass + "pf2e-statblock-indent-".length);
+	const levelAsNum: number = Number.parseInt(levelAsString);
+	return Number.isNaN(levelAsNum) ? 0 : levelAsNum;
+}
+
+function applyIndentation(statblockElement: HTMLElement, rootElement: HTMLElement) {
+	// Finds spans with the "pf2e-statblock-tab" class and replaces them with proper indentation
+	// This works around the fact that Markdown normally uses indentation to encode code-blocks,
+	// which we do not need here.
+
+	const paragraphs: HTMLCollection = statblockElement.getElementsByTagName("p");
+	let replacementParagraphs: Array<HTMLElement> = [];
+	// Do NOT edit statblockElement inside this loop!  The paragraphs collection is LIVE.
+	for (let i: number = 0; i < paragraphs.length; i++) {
+		const paragraph: HTMLElement = paragraphs[i] as HTMLElement;
+		const childNodes: NodeList = paragraph.childNodes;
+		const newParagraph: HTMLElement = rootElement.createEl("div");
+		let currentList: HTMLElement = null;
+
+		let currentSubPara: HTMLElement = newParagraph.createEl("p");
+		for (let j: number = 0; j < childNodes.length; j++) {
+			const childNode: Node = childNodes[j];
+			const childElement: Element = childNode as Element;
+
+			if (childNode.nodeName === "#text" && (childElement.textContent === null
+				|| childElement.textContent.trim().length === 0)) {
+				// Somehow empty text nodes end up places.  I don't want those.
+				continue;
+			} else if (currentSubPara.childNodes.length === 0) {
+				// find how indentation layers we need
+				let tabCount: number = 0;
+				for (let k: number = j; k < childNodes.length; k++) {
+					const testElement: Element = childNodes[k] as Element;
+					if (childNodes[k] instanceof Element && testElement.classList.contains("pf2e-statblock-tab")) {
+						tabCount++;
+					} else {
+						// no more leading tabs
+						break;
+					}
+				}
+
+				if (tabCount > 0) {
+					if (currentList !== null) {
+						// check for indentation changes!
+						const currentListIndent: number = getIndentationLevel(currentList);
+						if (currentListIndent !== tabCount) {
+							// we need a new list with the new indentation level
+							currentList = newParagraph.createEl("ul", {cls: `pf2e-statblock-indent-${tabCount}`});
+							// transfer the existing list element to the new list
+							currentList.appendChild(currentSubPara);
+						}
+						// The list element controls the indentation, rather than each element having to do so,
+						// so if the indentation is the same, then we don't have to do anything.
+					} else {
+						currentSubPara.classList.add(`pf2e-statblock-indent-${tabCount}`);
+					}
+					// Don't actually add the tab element to the sub-paragraph.
+					// Just advance past the tabs
+					j += tabCount - 1;	// the final advance past the tabs will be the loop's j++
+					console.debug(`Applied indentation level ${tabCount}`);
+					continue;
+				}
+
+				// Handle indented unordered lists
+				if ((currentSubPara.className.includes("pf2e-statblock-indent") ||
+					(currentList !== null && currentList.className.includes("pf2e-statblock-indent"))) &&
+					childNode.nodeName === "#text" && childElement.textContent.startsWith("- ")) {
+					// Check if we're already in a list
+					if (currentSubPara.tagName !== "LI") {
+						if (currentList === null) {
+							// Create new unordered list and replace the subparagraph
+							currentList = newParagraph.createEl("ul", {cls: currentSubPara.className});
+							currentSubPara.replaceWith(currentList);
+							console.debug("Starting list.")
+						}
+
+						currentSubPara = currentList.createEl("li");
+					}
+
+					// Bring the text that started the element, minus the dash and initial space
+					const textClone: Node = currentSubPara.appendChild(childNode.cloneNode(false));
+					textClone.textContent = textClone.textContent.substring(2);
+					console.debug(`Cloned text "${textClone.textContent}"`);
+
+					// Since we cloned above, we can proceed to the next node
+					continue;
+				} else if (currentSubPara.tagName === "LI") {
+					// Leave the list
+					let replacementPara = newParagraph.createEl("p");
+					currentList.removeChild(currentSubPara);
+					currentSubPara = replacementPara;
+					if (!currentList.hasChildNodes()) {
+						// Kill emptied list
+						// this shouldn't actually happen, but just in case...
+						newParagraph.removeChild(currentList);
+					}
+					currentList = null;
+					console.debug("List terminated.");
+
+					// Need to recover indentation if we had it
+					let tabCount: number = 0;
+					for (let k: number = j - 1; k >= 0; k--) {
+						const testElement: Element = childNodes[k] as Element;
+						if (childNodes[k] instanceof Element && testElement.classList.contains("pf2e-statblock-tab")) {
+							tabCount++;
+						} else {
+							// no more leading tabs
+							break;
+						}
+					}
+
+					if (tabCount > 0) {
+						currentSubPara.classList.add(`pf2e-statblock-indent-${tabCount}`);
+					}
+				}
+
+				if (currentSubPara.tagName === "P") {
+					if (childNode instanceof Element && childElement.tagName === "STRONG") {
+						// Lines that start with bold text have special formatting in statblocks
+						// with negative indentation
+						currentSubPara.classList.add("pf2e-statblock-subentry");
+						console.debug("Start-of-line is bold.");
+					} else if (currentSubPara.previousElementSibling != null &&
+						currentSubPara.previousElementSibling.tagName === "P" &&
+						!currentSubPara.previousElementSibling.classList.contains("pf2e-statblock-subentry") &&
+						getIndentationLevel(currentSubPara) === getIndentationLevel(currentSubPara.previousElementSibling)) {
+						// Apply first-line indentation styling to consecutive paragraphs of the same level
+						currentSubPara.classList.add("pf2e-statblock-2nd-paragraph");
+						console.debug("Consecutive paragraph found.");
+					}
+				}
+			} else if (childNode instanceof Element && childElement.tagName === "BR") {
+				if (currentList === null) {
+					currentSubPara = newParagraph.createEl("p");
+					console.debug("Created paragraph from newline.");
+				} else {
+					currentSubPara = currentList.createEl("li");
+					console.debug("Created list element from newline.");
+				}
+				// don't actually add the line break to either the previous or new sub-paragraph
+				continue;
+			}
+
+			console.debug(`Cloning node ${childNode.nodeName} with contents: ${childNode.textContent}`);
+			currentSubPara.appendChild(childNode.cloneNode(true));
+		}
+
+		replacementParagraphs.push(newParagraph);
+	}
+
+	// since the list is live, we have to do the replacement here, and we have to go backwards
+	for (let i: number = paragraphs.length - 1; i >= 0; i--) {
+		paragraphs[i].replaceWith(replacementParagraphs[i]);
+	}
 }
 
 // Helper class for accumulating the contents of each code block
@@ -307,6 +482,11 @@ export default class PF2StatPlugin extends Plugin {
 		// ============
 		this.registerMarkdownCodeBlockProcessor("pf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
+				// pre-process the string
+				// encode tabs as proper HTML elements so that they don't get truncated.
+				// this breaks indented code blocks inside statblocks, but we don't want/need those anyway
+				source = source.replaceAll("\t", '<span class="pf2e-statblock-tab">INDENTATION PROCESSING ERROR</span>');
+
 				const statblockElement: HTMLElement = element.createEl("div", { cls: "pf2e-statblock" });
 				// parse the markdown inside this codeblock
 				MarkdownRenderer.render(this.app, source, statblockElement, context.sourcePath, this);
@@ -314,14 +494,17 @@ export default class PF2StatPlugin extends Plugin {
 				// apply special coloration to special trait tags
 				// these colors are captured directly from official PDFs
 				const traitTags: HTMLCollection = statblockElement.getElementsByTagName("mark");
-				for (let i = 0; i < traitTags.length; i++) {
+				for (let i: number = 0; i < traitTags.length; i++) {
 					const traitTag: HTMLElement = traitTags[i] as HTMLElement;
 					const traitColorClass: string = getClassForTraitTag(traitTag.innerText);
-					traitTag.classList.add(traitColorClass, "pf2e-statblock")
+					traitTag.classList.add(traitColorClass);
 				}
 
+				// apply special indentation styling for <p> and <ul> elements
+				applyIndentation(statblockElement, element);
+
 				// In edit mode, prevent the code-edit button from messing with the layout
-				if (element.parentElement !== null && element.parentElement.classList.contains("cm-preview-code-block")) {
+				if (element.parentElement != null && element.parentElement.classList.contains("cm-preview-code-block")) {
 					statblockElement.classList.add("pf2e-statblock-edit");
 				}
 			}

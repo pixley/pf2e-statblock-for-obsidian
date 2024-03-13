@@ -42,15 +42,17 @@
 }
 
 * {
-	--size-trait: #3b7b59;
-	--uncommon-trait: #98513d;
-	--rare-trait: #002664;
-	--unique-trait: #54166e;
-	--normal-trait: #5e0000;
-	--trait-border: #d8c384;
-	--style-highlight: var(--color-cyan);
-	--action-highlight: var(--color-blue);
-	--error-highlight: var(--color-red);
+	--pf2e-size-trait: #3b7b59;
+	--pf2e-alignment-trait: #576293;
+	--pf2e-uncommon-trait: #98513d;
+	--pf2e-rare-trait: #002664;
+	--pf2e-unique-trait: #54166e;
+	--pf2e-normal-trait: #5e0000;
+	--pf2e-trait-border: #d8c384;
+	--pf2e-style-highlight: var(--color-cyan);
+	--pf2e-action-highlight: var(--color-blue);
+	--pf2e-error-highlight: var(--color-red);
+	--pf2e-common-indent: 1rem;
 }
 
 .block-language-pf2e-stats {
@@ -71,8 +73,7 @@
 
 .pf2e-statblock-edit {
 	/* Specifically scoots down to not interfere with the "edit code" button. */
-	/*margin-top: calc(var(--icon-size) + 3 * var(--size-2-2));*/
-	margin-top: 24px;
+	margin-top: calc(var(--icon-size) + 3 * var(--size-2-2));
 }
 
 .pf2e-statblock h1, .pf2e-statblock h2 {
@@ -105,16 +106,35 @@
 	font-weight: normal;
 }
 
-.pf2e-statblock p {
+.pf2e-statblock p, .pf2e-statblock li {
 	font-family: Roboto;
 	font-size: calc(var(--font-text-size) * 0.85);
 	margin: 0;
 	line-height: 1.3;
 	text-align: justify;
-	white-space: pre-wrap;
-	/*Apply inverse indentation*/
-	text-indent: -1rem;
-	padding-left: 1rem;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	margin-block-start: 0;
+	margin-block-end: 0;
+}
+
+.pf2e-statblock ::marker {
+	color: var(--text-normal);
+}
+
+.pf2e-statblock-2nd-paragraph {
+	text-indent: var(--pf2e-common-indent);
+}
+
+.pf2e-statblock-subentry {
+	/* For inverse indent for degrees of success, activations, and the like */
+	text-indent: calc(-1 * var(--pf2e-common-indent));
+	padding-left: var(--pf2e-common-indent);
+}
+
+.pf2e-statblock ul {
+	margin: 0;
+	padding-left: var(--pf2e-common-indent);
 }
 
 .pf2e-statblock mark {
@@ -122,7 +142,7 @@
 	text-transform: uppercase;
 	color: white !important;
 	background: magenta;
-	border-color: var(--trait-border);
+	border-color: var(--pf2e-trait-border);
 	border-style: solid;
 	border-width: 0.1rem;
 	border-right-width: 0.2rem;
@@ -165,6 +185,34 @@
 	margin-top: 0;
 }
 
+.pf2e-statblock-indent-1 {
+	margin-left: 1rem !important;
+}
+
+.pf2e-statblock-indent-2 {
+	margin-left: 2rem !important;
+}
+
+.pf2e-statblock-indent-3 {
+	margin-left: 3rem !important;
+}
+
+.pf2e-statblock-indent-4 {
+	margin-left: 4rem !important;
+}
+
+.pf2e-statblock-indent-5 {
+	margin-left: 5rem !important;
+}
+
+.pf2e-statblock-tab {
+	/* This only is used for circumventing Markdown turning tabs into codeblocks.
+		This should never appear for end-users. */
+	color: var(--color-red);
+	font-weight: bold;
+	padding-right: 0.5rem;
+}
+
 
 /* Ensures that we don't take on unwanted styling from ITS theme */
 .pf2e-statblock h1::after, .pf2e-statblock h2::after, .pf2e-statblock h3::after, .pf2e-statblock hr::after {
@@ -186,55 +234,60 @@
 .pf2e-statblock-live-mark {
 	font-weight: bold;
 	color: white !important;
-	background: var(--normal-trait);
+	background: var(--pf2e-normal-trait);
 }
 
 .pf2e-statblock-live-b {
 	font-weight: bold;
-	color: var(--style-highlight);
+	color: var(--pf2e-style-highlight);
 }
 
 .pf2e-statblock-live-i {
 	font-style: italic;
-	color: var(--style-highlight);
+	color: var(--pf2e-style-highlight);
 }
 
 .pf2e-statblock-live-actionSource {
-	color: var(--action-highlight);
+	color: var(--pf2e-action-highlight);
 }
 
 .pf2e-statblock-live-action {
 	font-family: Pathfinder-Icons;
 	font-variant: normal;
 	font-weight: normal;
-	color: var(--action-highlight);
+	color: var(--pf2e-action-highlight);
 }
 
 .pf2e-statblock-live-error {
-	color: var(--error-highlight);
+	color: var(--pf2e-error-highlight);
 }
 
 mark.pf2e-statblock-trait-normal, span.pf2e-statblock-trait-normal
 {
-	background: var(--normal-trait);
+	background: var(--pf2e-normal-trait);
 }
 
 mark.pf2e-statblock-trait-size, span.pf2e-statblock-trait-size
 {
-	background: var(--size-trait);
+	background: var(--pf2e-size-trait);
+}
+
+mark.pf2e-statblock-trait-alignment, span.pf2e-statblock-trait-alignment
+{
+	background: var(--pf2e-size-alignment);
 }
 
 mark.pf2e-statblock-trait-uncommon, span.pf2e-statblock-trait-uncommon
 {
-	background: var(--uncommon-trait);
+	background: var(--pf2e-uncommon-trait);
 }
 
 mark.pf2e-statblock-trait-rare, span.pf2e-statblock-trait-rare
 {
-	background: var(--rare-trait);
+	background: var(--pf2e-rare-trait);
 }
 
 mark.pf2e-statblock-trait-unique, span.pf2e-statblock-trait-unique
 {
-	background: var(--unique-trait);
+	background: var(--pf2e-unique-trait);
 }
