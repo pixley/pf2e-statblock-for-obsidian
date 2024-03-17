@@ -53,6 +53,9 @@
 	--pf2e-action-highlight: var(--color-blue);
 	--pf2e-error-highlight: var(--color-red);
 	--pf2e-common-indent: 1rem;
+	--pf2e-table-header: rgb(0, 42, 23);
+	--pf2e-table-even: rgba(173, 123, 0, 0.122);
+	--pf2e-table-odd: rgba(176, 125, 0, 0.216);
 }
 
 .block-language-pf2e-stats {
@@ -183,6 +186,37 @@
 .pf2e-statblock br {
 	content: "";
 	margin-top: 0;
+}
+
+.pf2e-statblock table {
+	width: 100%;
+}
+
+.pf2e-statblock th, .pf2e-statblock td {
+	font-family: Roboto;
+	font-size: calc(var(--font-text-size) * 0.85);
+	text-align: left;
+	border-style: none;
+	padding: 2px 0.5rem 0px 0.5rem ;
+}
+
+.pf2e-statblock th {
+	font-weight: bold;
+	background-color: var(--pf2e-table-header) !important;
+	color: white !important;
+}
+
+.pf2e-statblock td {
+	font-weight: normal;
+	color: var(--text-normal) !important;
+}
+
+.pf2e-statblock tr:nth-child(even) {
+	background-color: var(--pf2e-table-even) !important;
+}
+
+.pf2e-statblock tr:nth-child(odd) {
+	background-color: var(--pf2e-table-odd) !important;
 }
 
 .pf2e-statblock-indent-1 {
