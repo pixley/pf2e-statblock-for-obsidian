@@ -66,8 +66,8 @@ function applyIndentation(statblockElement: HTMLElement, rootElement: HTMLElemen
 			const childNode: Node = childNodes[j];
 			const childElement: Element = childNode as Element;
 
-			if (childNode.nodeName === "#text" && (childElement.textContent === null
-				|| childElement.textContent.trim().length === 0)) {
+			if (childNode.nodeName === "#text" && currentSubPara.childNodes.length === 0 &&
+				(childElement.textContent === null || childElement.textContent.trim().length === 0)) {
 				// Somehow empty text nodes end up places.  I don't want those.
 				continue;
 			} else if (currentSubPara.childNodes.length === 0) {
