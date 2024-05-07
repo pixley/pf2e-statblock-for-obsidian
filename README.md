@@ -104,7 +104,7 @@ This plugin supports the following languages for trait coloring (in no particula
 
 Trait coloration is based on your Obsidian app's display language.  If your selected language is not supported, the plugin falls back to English.
 
-The original set languages were supported because I was able to find their translations for Pathfinder 2e content in an evening of searching.  Shout out to the robust multilingual PF2e community on Foundry VTT; you guys' work was a huge help in getting so many languages supported from the get-go.
+The original set of languages were supported because I was able to find their translations for Pathfinder 2e content in an evening of searching.  Shout out to the robust multilingual PF2e community on Foundry VTT; you guys' work was a huge help in getting so many languages supported from the get-go.
 
 If you'd like your language to be added or have found a translation issue for your language, please create an issue and link your language's PF2e content to me.  I am aware that many languages do not have official PF2e content, but using the community-agreed-upon phrasing (across SRDs, wikis, VTT implementations, etc) is the goal here, so that's why linking the content is important.  English is my native language, and I have only rudimentary knowledge of two other languages (German and Japanese), so I have to trust the relevant communities in terms of translation accuracy.
 
