@@ -1,34 +1,49 @@
-import { Plugin, MarkdownRenderer, MarkdownPostProcessorContext } from 'obsidian';
+import { Plugin, MarkdownRenderer, MarkdownPostProcessorContext, PluginSettingTab, Setting } from 'obsidian';
 import { WidgetType, EditorView, Decoration, DecorationSet } from '@codemirror/view';
 import { syntaxTree, LanguageSupport, Language } from '@codemirror/language'
 import { RangeSetBuilder, Extension, StateField, Transaction, Prec } from '@codemirror/state'
 import { parser, MarkdownParser, MarkdownConfig, InlineContext } from '@lezer/markdown'
 import { tags } from '@lezer/highlight'
+import { getEnglishTrait } from './translation'
 
 // ============
 // Helpers
 // ============
 
+const traitColorMap = new Map<string, string>([
+		["tiny", "pf2e-statblock-trait-size"],
+		["small", "pf2e-statblock-trait-size"],
+		["medium", "pf2e-statblock-trait-size"],
+		["large", "pf2e-statblock-trait-size"],
+		["huge", "pf2e-statblock-trait-size"],
+		["gargantuan", "pf2e-statblock-trait-size"],
+		["lg", "pf2e-statblock-trait-alignment"],
+		["ng", "pf2e-statblock-trait-alignment"],
+		["cg", "pf2e-statblock-trait-alignment"],
+		["ln", "pf2e-statblock-trait-alignment"],
+		["n", "pf2e-statblock-trait-alignment"],
+		["cn", "pf2e-statblock-trait-alignment"],
+		["le", "pf2e-statblock-trait-alignment"],
+		["ne", "pf2e-statblock-trait-alignment"],
+		["ce", "pf2e-statblock-trait-alignment"],
+		["village", "pf2e-statblock-trait-settlement"],
+		["town", "pf2e-statblock-trait-settlement"],
+		["city", "pf2e-statblock-trait-settlement"],
+		["metropolis", "pf2e-statblock-trait-settlement"],
+		["uncommon", "pf2e-statblock-trait-uncommon"],
+		["rare", "pf2e-statblock-trait-rare"],
+		["unique", "pf2e-statblock-trait-unique"]
+	]);
+
 function getClassForTraitTag(trait: string): string {
-	const traitLower = trait.trim().toLowerCase();
+	const traitLower: string = trait.trim().toLowerCase();
 
-	// all sizes get the same color
-	if (traitLower === "tiny" || traitLower === "small" || traitLower === "medium" ||
-		traitLower === "large" || traitLower === "huge" || traitLower === "gargantuan") {
-		return "pf2e-statblock-trait-size";
-	} else if (traitLower === "lg" || traitLower === "ng" || traitLower === "cg" ||
-		traitLower === "ln" || traitLower === "n" || traitLower === "cn" ||
-		traitLower === "le" || traitLower === "ne" || traitLower === "ce") {
-		return "pf2e-statblock-trait-alignment"
-	} else if (traitLower === "uncommon") {
-		return "pf2e-statblock-trait-uncommon";
-	} else if (traitLower === "rare") {
-		return "pf2e-statblock-trait-rare";
-	} else if (traitLower === "unique") {
-		return "pf2e-statblock-trait-unique";
+	const traitInEnglish: string = getEnglishTrait(traitLower);
+	if (traitColorMap.has(traitInEnglish)) {
+		return traitColorMap.get(traitInEnglish);
+	} else {
+		return "pf2e-statblock-trait-normal";
 	}
-
-	return "pf2e-statblock-trait-normal";
 }
 
 function getIndentationLevel(element: Element): number {

@@ -44,6 +44,7 @@
 * {
 	--pf2e-size-trait: #3b7b59;
 	--pf2e-alignment-trait: #576293;
+	--pf2e-settlement-trait: #3b7b59;
 	--pf2e-uncommon-trait: #98513d;
 	--pf2e-rare-trait: #002664;
 	--pf2e-unique-trait: #54166e;
@@ -308,7 +309,12 @@ mark.pf2e-statblock-trait-size, span.pf2e-statblock-trait-size
 
 mark.pf2e-statblock-trait-alignment, span.pf2e-statblock-trait-alignment
 {
-	background: var(--pf2e-size-alignment);
+	background: var(--pf2e-alignment-trait);
+}
+
+mark.pf2e-statblock-trait-settlement, span.pf2e-statblock-trait-settlement
+{
+	background: var(--pf2e-settlement-trait);
 }
 
 mark.pf2e-statblock-trait-uncommon, span.pf2e-statblock-trait-uncommon
