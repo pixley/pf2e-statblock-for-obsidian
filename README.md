@@ -26,6 +26,8 @@ In a standard statblock, traits are signified by wrapping them in double-equals 
 ==Unique== ==Medium== ==Humanoid==
 ```
 
+Certain specific traits, such as for size and rarity, are automatically colored according to convention.
+
 For abbreviated statblocks, such as the ones for brief NPC blurbs, instead use heading 3, prefixed with a triple hash `###`
 
 ### Line Breaks
@@ -84,6 +86,27 @@ You can add action icons as follows:
 
 	**Activate-Holster Throw** `[free-action]` (concentrate) **Trigger** You roll initiative; **Effect** The belt launches a weapon from its holster.  You Interact to draw a weapon.
 	```
+
+## Internationalization
+
+This plugin supports the following languages for trait coloring (in no particular order):
+
+- English
+- German
+- Brazilian Portuguese
+- Russian
+- Japanese
+- French
+- Polish
+- Korean
+- Simplified Chinese
+- Ukrainian
+
+Trait coloration is based on your Obsidian app's display language.  If your selected language is not supported, the plugin falls back to English.
+
+The original set languages were supported because I was able to find their translations for Pathfinder 2e content in an evening of searching.  Shout out to the robust multilingual PF2e community on Foundry VTT; you guys' work was a huge help in getting so many languages supported from the get-go.
+
+If you'd like your language to be added or have found a translation issue for your language, please create an issue and link your language's PF2e content to me.  I am aware that many languages do not have official PF2e content, but using the community-agreed-upon phrasing (across SRDs, wikis, VTT implementations, etc) is the goal here, so that's why linking the content is important.  English is my native language, and I have only rudimentary knowledge of two other languages (German and Japanese), so I have to trust the relevant communities in terms of translation accuracy.
 
 ## Pathfinder License Notices
 
