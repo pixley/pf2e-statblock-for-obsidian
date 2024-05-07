@@ -256,20 +256,23 @@
 
 .pf2e-statblock-live-h1, .pf2e-statblock-live-h2 {
 	font-weight: bold;
-	font-size: 1.4rem;
+	font-size: calc(var(--font-text-size) * 1.4);
 }
 
 .pf2e-statblock-live-h3 {
 	font-weight: bold;
+	font-size: var(--font-text-size);
 }
 
 .pf2e-statblock-live-p {
+	font-size: var(--font-text-size);
 }
 
 .pf2e-statblock-live-mark {
 	font-weight: bold;
 	color: white !important;
 	background: var(--pf2e-normal-trait);
+	font-size: var(--font-text-size);
 }
 
 .pf2e-statblock-live-b {
