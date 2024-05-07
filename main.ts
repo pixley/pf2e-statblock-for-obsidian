@@ -4,7 +4,7 @@ import { syntaxTree, LanguageSupport, Language } from '@codemirror/language'
 import { RangeSetBuilder, Extension, StateField, Transaction, Prec } from '@codemirror/state'
 import { parser, MarkdownParser, MarkdownConfig, InlineContext } from '@lezer/markdown'
 import { tags } from '@lezer/highlight'
-import { getEnglishTrait } from './translation'
+import { getTraitTranslationKey } from './translation'
 
 // ============
 // Helpers
@@ -38,9 +38,9 @@ const traitColorMap = new Map<string, string>([
 function getClassForTraitTag(trait: string): string {
 	const traitLower: string = trait.trim().toLowerCase();
 
-	const traitInEnglish: string = getEnglishTrait(traitLower);
-	if (traitColorMap.has(traitInEnglish)) {
-		return traitColorMap.get(traitInEnglish);
+	const traitKey: string = getTraitTranslationKey(traitLower);
+	if (traitColorMap.has(traitKey)) {
+		return traitColorMap.get(traitKey);
 	} else {
 		return "pf2e-statblock-trait-normal";
 	}

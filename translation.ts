@@ -261,7 +261,7 @@ const translationTable = new Map<string, Map<string, string> >([
 		["uk", ukTranslations]
 	]);
 
-export function getEnglishTrait(originalTrait: string): string {
+export function getTraitTranslationKey(originalTrait: string): string {
 	const locale: string | null = window.localStorage.getItem('language');
 	if (locale == null || !translationTable.has(locale)) {
 		return originalTrait;
@@ -269,7 +269,7 @@ export function getEnglishTrait(originalTrait: string): string {
 
 	const translationsForLocale = translationTable.get(locale);
 	if (!translationsForLocale.has(originalTrait)) {
-		return originalTrait;
+		return "";
 	} else {
 		return translationsForLocale.get(originalTrait);
 	}
