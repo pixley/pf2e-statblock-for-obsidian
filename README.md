@@ -94,6 +94,7 @@ This plugin supports the following languages for trait coloring (in no particula
 - English
 - German
 - Brazilian Portuguese
+- Spanish
 - Russian
 - Japanese
 - French
