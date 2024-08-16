@@ -498,9 +498,13 @@ export default class PF2StatPlugin extends Plugin {
 		this.registerMarkdownCodeBlockProcessor("pf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
 				// pre-process the string
-				// encode tabs as proper HTML elements so that they don't get truncated.
+				// encode tabs, full-width spaces, or substrings of four consecutive normal spaces
+				// as proper HTML elements so that they don't get truncated.
 				// this breaks indented code blocks inside statblocks, but we don't want/need those anyway
-				source = source.replaceAll("\t", '<span class="pf2e-statblock-tab">INDENTATION PROCESSING ERROR</span>');
+				const tabHtml: string = '<span class="pf2e-statblock-tab">INDENTATION PROCESSING ERROR</span>';
+				source = source.replaceAll(/\n(\t| {4}|\u3000)+/ug, (matchingSubstring: string) => {
+					return matchingSubstring.replaceAll(/\t| {4}|\u3000/ug, tabHtml);
+				});
 
 				const statblockElement: HTMLElement = element.createEl("div", { cls: "pf2e-statblock" });
 				// parse the markdown inside this codeblock

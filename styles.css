@@ -165,14 +165,15 @@
 }
 
 .pf2e-statblock code {
-	font-family: Pathfinder-Icons;
+	font-family: Pathfinder-Icons !important;
 	font-variant: normal;
 	font-weight: normal;
 	text-transform: initial;
+	text-indent: 0;
 	color: var(--text-normal);
 	background-color: var(--background-primary);
 	border-radius: 0;
-	display: inline;
+	display: inline-block;
 }
 
 .pf2e-statblock hr {
@@ -293,7 +294,10 @@
 	font-family: Pathfinder-Icons;
 	font-variant: normal;
 	font-weight: normal;
+	text-indent: 0;
+	display: inline-block;
 	color: var(--pf2e-action-highlight);
+	user-select: none;
 }
 
 .pf2e-statblock-live-error {
