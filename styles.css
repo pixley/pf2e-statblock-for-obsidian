@@ -50,6 +50,8 @@
 	--pf2e-unique-trait: #54166e;
 	--pf2e-normal-trait: #5e0000;
 	--pf2e-trait-border: #d8c384;
+	--sf2e-normal-trait: #2c4e6a;
+	--sf2e-trait-border: #9cd9e6;
 	--pf2e-style-highlight: var(--color-cyan);
 	--pf2e-action-highlight: var(--color-blue);
 	--pf2e-error-highlight: var(--color-red);
@@ -162,6 +164,10 @@
 	padding-bottom: 0.1rem;
 	text-align: left;
 	display: inline;
+}
+
+.pf2e-statblock mark.starfinder-trait {
+	border-color: var(--sf2e-trait-border);
 }
 
 .pf2e-statblock code {
@@ -309,8 +315,15 @@
 	background: var(--pf2e-normal-trait);
 }
 
+.pf2e-statblock mark.sf2e-statblock-trait-normal,
+.pf2e-statblock span.sf2e-statblock-trait-normal
+{
+	background: var(--sf2e-normal-trait);
+}
+
 .pf2e-statblock mark.pf2e-statblock-trait-size,
-.pf2e-statblock span.pf2e-statblock-trait-size {
+.pf2e-statblock span.pf2e-statblock-trait-size
+{
 	background: var(--pf2e-size-trait);
 }
 

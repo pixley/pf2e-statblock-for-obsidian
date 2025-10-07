@@ -35,12 +35,14 @@ const traitColorMap = new Map<string, string>([
 		["unique", "pf2e-statblock-trait-unique"]
 	]);
 
-function getClassForTraitTag(trait: string): string {
+function getClassForTraitTag(trait: string, isStarfinder: boolean): string {
 	const traitLower: string = trait.trim().toLowerCase();
 
 	const traitKey: string = getTraitTranslationKey(traitLower);
 	if (traitColorMap.has(traitKey)) {
 		return traitColorMap.get(traitKey);
+	} else if (isStarfinder) {
+		return "sf2e-statblock-trait-normal";
 	} else {
 		return "pf2e-statblock-trait-normal";
 	}
@@ -217,6 +219,7 @@ function applyIndentation(statblockElement: HTMLElement, rootElement: HTMLElemen
 class StatBlockCodeBlock {
 	codeText: string = "";
 	locationInDoc: number = -1;		// offset from the beginning of the document that this block starts
+	isStarfinder: boolean = false;
 }
 // Helper class for accumulating decorations to be added to the builder
 class DecorationInfo {
@@ -309,10 +312,11 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 					if (insideStatBlock) {
 						console.debug("ERROR: code block starting inside a code block???");
 						return false;
-					} else if (nodeLine === "```pf2e-stats") {
+					} else if (nodeLine === "```pf2e-stats" || nodeLine === "```sf2e-stats") {
 						insideStatBlock = true;
 						lastLineEnd = -1;
 						const newBlock = new StatBlockCodeBlock();
+						newBlock.isStarfinder = nodeLine === "```sf2e-stats";
 						codeBlocks.push(newBlock);
 						return false;	//the content of the code block isn't a child of this node, but rather siblings
 					}
@@ -426,7 +430,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 							allowChildParse = false;
 							// in the context of the node, the actual trait text is flanked by "=="s
 							const traitText: string = codeBlock.codeText.slice(node.from + 2, node.to - 2);
-							const traitColorClass: string = getClassForTraitTag(traitText);
+							const traitColorClass: string = getClassForTraitTag(traitText, codeBlock.isStarfinder);
 							elementClass += " " + traitColorClass;
 							break;
 						}
@@ -490,6 +494,43 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 	},
 });
 
+function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, context: MarkdownPostProcessorContext, isStarfinder: boolean) {
+	// pre-process the string
+	// encode tabs, full-width spaces, or substrings of four consecutive normal spaces
+	// as proper HTML elements so that they don't get truncated.
+	// this breaks indented code blocks inside statblocks, but we don't want/need those anyway
+	const tabHtml: string = '<span class="pf2e-statblock-tab">INDENTATION PROCESSING ERROR</span>';
+	source = source.replaceAll(/\n(\t| {4}|\u3000)+/ug, (matchingSubstring: string) => {
+		return matchingSubstring.replaceAll(/\t| {4}|\u3000/ug, tabHtml);
+	});
+
+	const statblockElement: HTMLElement = element.createEl("div", { cls: "pf2e-statblock" });
+	// parse the markdown inside this codeblock
+	MarkdownRenderer.render(this.app, source, statblockElement, context.sourcePath, this);
+	
+	// apply special coloration to special trait tags
+	// these colors are captured directly from official PDFs
+	const traitTags: HTMLCollection = statblockElement.getElementsByTagName("mark");
+	for (let i: number = 0; i < traitTags.length; i++) {
+		const traitTag: HTMLElement = traitTags[i] as HTMLElement;
+		const traitColorClass: string = getClassForTraitTag(traitTag.innerText, isStarfinder);
+		traitTag.classList.add(traitColorClass);
+		
+		if (isStarfinder) {
+			// Switch the trait color border
+			traitTag.classList.add("starfinder-trait");
+		}
+	}
+
+	// apply special indentation styling for <p> and <ul> elements
+	applyIndentation(statblockElement, element);
+
+	// In edit mode, prevent the code-edit button from messing with the layout
+	if (element.parentElement != null && element.parentElement.classList.contains("cm-preview-code-block")) {
+		statblockElement.classList.add("pf2e-statblock-edit");
+	}
+}
+
 export default class PF2StatPlugin extends Plugin {
 	override async onload() {
 		// ============
@@ -497,35 +538,13 @@ export default class PF2StatPlugin extends Plugin {
 		// ============
 		this.registerMarkdownCodeBlockProcessor("pf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
-				// pre-process the string
-				// encode tabs, full-width spaces, or substrings of four consecutive normal spaces
-				// as proper HTML elements so that they don't get truncated.
-				// this breaks indented code blocks inside statblocks, but we don't want/need those anyway
-				const tabHtml: string = '<span class="pf2e-statblock-tab">INDENTATION PROCESSING ERROR</span>';
-				source = source.replaceAll(/\n(\t| {4}|\u3000)+/ug, (matchingSubstring: string) => {
-					return matchingSubstring.replaceAll(/\t| {4}|\u3000/ug, tabHtml);
-				});
-
-				const statblockElement: HTMLElement = element.createEl("div", { cls: "pf2e-statblock" });
-				// parse the markdown inside this codeblock
-				MarkdownRenderer.render(this.app, source, statblockElement, context.sourcePath, this);
-				
-				// apply special coloration to special trait tags
-				// these colors are captured directly from official PDFs
-				const traitTags: HTMLCollection = statblockElement.getElementsByTagName("mark");
-				for (let i: number = 0; i < traitTags.length; i++) {
-					const traitTag: HTMLElement = traitTags[i] as HTMLElement;
-					const traitColorClass: string = getClassForTraitTag(traitTag.innerText);
-					traitTag.classList.add(traitColorClass);
-				}
-
-				// apply special indentation styling for <p> and <ul> elements
-				applyIndentation(statblockElement, element);
-
-				// In edit mode, prevent the code-edit button from messing with the layout
-				if (element.parentElement != null && element.parentElement.classList.contains("cm-preview-code-block")) {
-					statblockElement.classList.add("pf2e-statblock-edit");
-				}
+				pf2eStatsCodeBlockProcessor(source, element, context, false);
+			}
+		);
+		
+		this.registerMarkdownCodeBlockProcessor("sf2e-stats",
+			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
+				pf2eStatsCodeBlockProcessor(source, element, context, true);
 			}
 		);
 
