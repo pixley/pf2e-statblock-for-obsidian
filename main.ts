@@ -35,10 +35,10 @@ const traitColorMap = new Map<string, string>([
 		["unique", "pf2e-statblock-trait-unique"]
 	]);
 
-function getClassForTraitTag(trait: string, isStarfinder: boolean): string {
+function getClassForTraitTag(trait: string, isStarfinder: boolean, overrideLocale: string | null): string {
 	const traitLower: string = trait.trim().toLowerCase();
 
-	const traitKey: string = getTraitTranslationKey(traitLower);
+	const traitKey: string = getTraitTranslationKey(traitLower, overrideLocale);
 	if (traitColorMap.has(traitKey)) {
 		return traitColorMap.get(traitKey);
 	} else if (isStarfinder) {
@@ -220,6 +220,7 @@ class StatBlockCodeBlock {
 	codeText: string = "";
 	locationInDoc: number = -1;		// offset from the beginning of the document that this block starts
 	isStarfinder: boolean = false;
+	languageOverride: string | null = null;
 }
 // Helper class for accumulating decorations to be added to the builder
 class DecorationInfo {
@@ -393,6 +394,13 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 							allowChildParse = false;
 							break;
 						}
+						case "ATXHeading4": {
+							// the actual language code is preceded by "#### ", 5 characters
+							codeBlock.languageOverride = codeBlock.codeText.slice(node.from + 5, node.to);
+							allowChildParse = false;
+							elementClass += "-h4";
+							break;
+						}
 						case "Paragraph": {
 							elementClass += "-p";
 							startBias = -1;
@@ -430,7 +438,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 							allowChildParse = false;
 							// in the context of the node, the actual trait text is flanked by "=="s
 							const traitText: string = codeBlock.codeText.slice(node.from + 2, node.to - 2);
-							const traitColorClass: string = getClassForTraitTag(traitText, codeBlock.isStarfinder);
+							const traitColorClass: string = getClassForTraitTag(traitText, codeBlock.isStarfinder, codeBlock.languageOverride);
 							elementClass += " " + traitColorClass;
 							break;
 						}
@@ -508,12 +516,19 @@ function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, conte
 	// parse the markdown inside this codeblock
 	MarkdownRenderer.render(this.app, source, statblockElement, context.sourcePath, this);
 	
+	// apply language override, if present
+	const languageOverrides: HTMLCollection = statblockElement.getElementsByTagName("h4");
+	let languageOverride: string | null = null;
+	if (languageOverrides.length > 0) {
+		languageOverride = languageOverrides[0].innerText;
+	}
+	
 	// apply special coloration to special trait tags
 	// these colors are captured directly from official PDFs
 	const traitTags: HTMLCollection = statblockElement.getElementsByTagName("mark");
 	for (let i: number = 0; i < traitTags.length; i++) {
 		const traitTag: HTMLElement = traitTags[i] as HTMLElement;
-		const traitColorClass: string = getClassForTraitTag(traitTag.innerText, isStarfinder);
+		const traitColorClass: string = getClassForTraitTag(traitTag.innerText, isStarfinder, languageOverride);
 		traitTag.classList.add(traitColorClass);
 		
 		if (isStarfinder) {

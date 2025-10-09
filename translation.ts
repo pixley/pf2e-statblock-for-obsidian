@@ -1,3 +1,5 @@
+// German
+// Specifically German German, since ß exists here.  I didn't see any materials specifically for other dialects.
 const deTranslations = new Map<string, string>([
 		["sehr klein", "tiny"],
 		["klein", "small"],
@@ -23,6 +25,8 @@ const deTranslations = new Map<string, string>([
 		["einzigartig", "unique"]
 	]);
 
+// Brazilian Portuguese
+// Sorry folks from Portugal, but I couldn't find any PF2e material in your dialect
 const ptBrTranslations = new Map<string, string>([
 		["minúsculo", "tiny"],
 		["pequeno", "small"],
@@ -48,6 +52,8 @@ const ptBrTranslations = new Map<string, string>([
 		["único", "unique"]
 	]);
 
+// Spanish 
+// honestly not sure whether Latin American or Castilian, or if there's even a difference with these terms
 const esTranslations = new Map<string, string>([
 		["diminuto", "tiny"],
 		["pequeño", "small"],
@@ -73,6 +79,7 @@ const esTranslations = new Map<string, string>([
 		["única", "unique"]
 	]);
 
+// Russian
 const ruTranslations = new Map<string, string>([
 		["крошечный", "tiny"],
 		["маленький", "small"],
@@ -98,6 +105,7 @@ const ruTranslations = new Map<string, string>([
 		["уникальный", "unique"]
 	]);
 
+// Japanese
 const jaTranslations = new Map<string, string>([
 		["超小型", "tiny"],
 		["小型", "small"],
@@ -123,6 +131,8 @@ const jaTranslations = new Map<string, string>([
 		["ユニーク", "unique"]
 	]);
 
+// French
+// I don't know whether this adequately covers Quebecois
 const frTranslations = new Map<string, string>([
 		["très petite", "tiny"],
 		["petite", "small"],
@@ -148,6 +158,7 @@ const frTranslations = new Map<string, string>([
 		["unique", "unique"]
 	]);
 
+// Polish
 const plTranslations = new Map<string, string>([
 		["malutki", "tiny"],
 		["mały", "small"],
@@ -173,6 +184,7 @@ const plTranslations = new Map<string, string>([
 		["unikalny", "unique"]
 	]);
 
+// Korean
 const koTranslations = new Map<string, string>([
 		["매우 작은", "tiny"],
 		["작은", "small"],
@@ -198,6 +210,7 @@ const koTranslations = new Map<string, string>([
 		["고유", "unique"]
 	]);
 
+// Simplified Chinese
 const zhTranslations = new Map<string, string>([
 		["超小型", "tiny"],
 		["小型", "small"],
@@ -223,6 +236,7 @@ const zhTranslations = new Map<string, string>([
 		["独特", "unique"]
 	]);
 
+// Ukrainian
 const ukTranslations = new Map<string, string>([
 		["крихітний", "tiny"],
 		["маленький", "small"],
@@ -261,16 +275,21 @@ const translationTable = new Map<string, Map<string, string> >([
 		["uk", ukTranslations]
 	]);
 
-export function getTraitTranslationKey(originalTrait: string): string {
-	const locale: string | null = window.localStorage.getItem('language');
+export function getTraitTranslationKey(originalTrait: string, overrideLocale: string | null): string {
+	let locale: string | null = window.localStorage.getItem('language');
+	
+	if (overrideLocale != null) {
+		locale = overrideLocale;
+	}
+	
 	if (locale == null || !translationTable.has(locale)) {
 		return originalTrait;
 	}
 
 	const translationsForLocale = translationTable.get(locale);
-	if (!translationsForLocale.has(originalTrait)) {
-		return "";
-	} else {
+	if (translationsForLocale.has(originalTrait)) {
 		return translationsForLocale.get(originalTrait);
+	} else {
+		return "";
 	}
 }

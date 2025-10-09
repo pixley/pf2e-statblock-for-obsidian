@@ -55,6 +55,7 @@
 	--pf2e-style-highlight: var(--color-cyan);
 	--pf2e-action-highlight: var(--color-blue);
 	--pf2e-error-highlight: var(--color-red);
+	--pf2e-language-override-highlight: var(--color-base-50);
 	--pf2e-common-indent: 1rem;
 	--pf2e-table-header: rgb(0, 42, 23);
 	--pf2e-table-even: rgba(173, 123, 0, 0.122);
@@ -110,6 +111,10 @@
 	line-height: 1.5;
 	white-space: nowrap;
 	font-weight: normal;
+}
+
+.pf2e-statblock h4 {
+	display: none;
 }
 
 .pf2e-statblock p, .pf2e-statblock li {
@@ -271,6 +276,12 @@
 	font-size: var(--font-text-size);
 }
 
+.pf2e-statblock-live-h4 {
+	color: var(--pf2e-language-override-highlight);
+	font-size: var(--font-text-size);
+	font-style: italic;
+}
+
 .pf2e-statblock-live-p {
 	font-size: var(--font-text-size);
 }
@@ -278,7 +289,6 @@
 .pf2e-statblock-live-mark {
 	font-weight: bold;
 	color: white !important;
-	background: var(--pf2e-normal-trait);
 	font-size: var(--font-text-size);
 }
 
@@ -311,43 +321,41 @@
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-normal,
-.pf2e-statblock span.pf2e-statblock-trait-normal {
+.pf2e-statblock-live-mark.pf2e-statblock-trait-normal {
 	background: var(--pf2e-normal-trait);
 }
 
 .pf2e-statblock mark.sf2e-statblock-trait-normal,
-.pf2e-statblock span.sf2e-statblock-trait-normal
-{
+.pf2e-statblock-live-mark.sf2e-statblock-trait-normal {
 	background: var(--sf2e-normal-trait);
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-size,
-.pf2e-statblock span.pf2e-statblock-trait-size
-{
+.pf2e-statblock-live-mark.pf2e-statblock-trait-size {
 	background: var(--pf2e-size-trait);
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-alignment,
-.pf2e-statblock span.pf2e-statblock-trait-alignment {
+.pf2e-statblock-live-mark.pf2e-statblock-trait-alignment {
 	background: var(--pf2e-alignment-trait);
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-settlement,
-.pf2e-statblock span.pf2e-statblock-trait-settlement {
+.pf2e-statblock-live-mark.pf2e-statblock-trait-settlement {
 	background: var(--pf2e-settlement-trait);
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-uncommon,
-.pf2e-statblock span.pf2e-statblock-trait-uncommon {
+.pf2e-statblock-live-mark.pf2e-statblock-trait-uncommon {
 	background: var(--pf2e-uncommon-trait);
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-rare,
-.pf2e-statblock span.pf2e-statblock-trait-rare {
+.pf2e-statblock-live-mark.pf2e-statblock-trait-rare {
 	background: var(--pf2e-rare-trait);
 }
 
 .pf2e-statblock mark.pf2e-statblock-trait-unique,
-.pf2e-statblock span.pf2e-statblock-trait-unique {
+.pf2e-statblock-live-mark.pf2e-statblock-trait-unique {
 	background: var(--pf2e-unique-trait);
 }
