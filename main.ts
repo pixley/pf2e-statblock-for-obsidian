@@ -520,7 +520,8 @@ function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, conte
 	const languageOverrides: HTMLCollection = statblockElement.getElementsByTagName("h4");
 	let languageOverride: string | null = null;
 	if (languageOverrides.length > 0) {
-		languageOverride = languageOverrides[0].innerText;
+		const overrideHeader = languageOverrides[0] as HTMLElement;
+		languageOverride = overrideHeader.innerText;
 	}
 	
 	// apply special coloration to special trait tags

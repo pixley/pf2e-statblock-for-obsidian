@@ -10,6 +10,8 @@ To start an item block, create a codeblock with the language tag `pf2e-stats`, a
     [YOUR CONTENT HERE]
     ```
 
+Additionally, you can use `sf2e-stats` instead to switch over to Starfinder 2e theming!
+
 ### Name
 
 The name of the item/creature/etc is indicated with heading 1, prefixed with a single hash `#`.
@@ -91,19 +93,21 @@ You can add action icons as follows:
 
 This plugin supports the following languages for trait coloring (in no particular order):
 
-- English
-- German
-- Brazilian Portuguese
-- Spanish
-- Russian
-- Japanese
-- French
-- Polish
-- Korean
-- Simplified Chinese
-- Ukrainian
+- English `(en)`
+- German `(de)`
+- Brazilian Portuguese `(pt-br)`
+- Spanish `(es)`
+- Russian `(ru)`
+- Japanese `(ja)`
+- French `(fr)`
+- Polish `(po)`
+- Korean `(ko)`
+- Simplified Chinese `(zh)`
+- Ukrainian `(uk)`
 
 Trait coloration is based on your Obsidian app's display language.  If your selected language is not supported, the plugin falls back to English.
+
+You can also set an override language for a stat block by adding a Heading 4 line (`#### [language code]`) at the top of the codeblock.
 
 The original set of languages were supported because I was able to find their translations for Pathfinder 2e content in an evening of searching.  Shout out to the robust multilingual PF2e community on Foundry VTT; you guys' work was a huge help in getting so many languages supported from the get-go.
 

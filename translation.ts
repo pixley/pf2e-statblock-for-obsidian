@@ -279,6 +279,10 @@ export function getTraitTranslationKey(originalTrait: string, overrideLocale: st
 	let locale: string | null = window.localStorage.getItem('language');
 	
 	if (overrideLocale != null) {
+		if (overrideLocale === "en") {
+			return originalTrait;
+		}
+		
 		locale = overrideLocale;
 	}
 	
