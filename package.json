@@ -1,6 +1,6 @@
 {
 	"name": "pf2e-statblock-plugin",
-	"version": "3.3.0",
+	"version": "3.3.1",
 	"description": "Renders Pathfinder 2e statblocks cleanly, using only Markdown-based syntax.",
 	"main": "main.js",
 	"scripts": {
