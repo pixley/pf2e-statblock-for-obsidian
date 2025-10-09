@@ -502,7 +502,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 	},
 });
 
-function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, context: MarkdownPostProcessorContext, isStarfinder: boolean) {
+function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, context: MarkdownPostProcessorContext, plugin: Plugin, isStarfinder: boolean) {
 	// pre-process the string
 	// encode tabs, full-width spaces, or substrings of four consecutive normal spaces
 	// as proper HTML elements so that they don't get truncated.
@@ -514,7 +514,7 @@ function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, conte
 
 	const statblockElement: HTMLElement = element.createEl("div", { cls: "pf2e-statblock" });
 	// parse the markdown inside this codeblock
-	MarkdownRenderer.render(this.app, source, statblockElement, context.sourcePath, this);
+	MarkdownRenderer.render(plugin.app, source, statblockElement, context.sourcePath, plugin);
 	
 	// apply language override, if present
 	const languageOverrides: HTMLCollection = statblockElement.getElementsByTagName("h4");
@@ -554,13 +554,13 @@ export default class PF2StatPlugin extends Plugin {
 		// ============
 		this.registerMarkdownCodeBlockProcessor("pf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
-				pf2eStatsCodeBlockProcessor(source, element, context, false);
+				pf2eStatsCodeBlockProcessor(source, element, context, this, false);
 			}
 		);
 		
 		this.registerMarkdownCodeBlockProcessor("sf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
-				pf2eStatsCodeBlockProcessor(source, element, context, true);
+				pf2eStatsCodeBlockProcessor(source, element, context, this, true);
 			}
 		);
 

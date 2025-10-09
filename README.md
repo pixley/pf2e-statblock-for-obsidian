@@ -93,17 +93,17 @@ You can add action icons as follows:
 
 This plugin supports the following languages for trait coloring (in no particular order):
 
-- English `(en)`
-- German `(de)`
-- Brazilian Portuguese `(pt-br)`
-- Spanish `(es)`
-- Russian `(ru)`
-- Japanese `(ja)`
-- French `(fr)`
-- Polish `(po)`
-- Korean `(ko)`
-- Simplified Chinese `(zh)`
-- Ukrainian `(uk)`
+- English `en`
+- German `de`
+- Brazilian Portuguese `pt-br`
+- Spanish `es`
+- Russian `ru`
+- Japanese `ja`
+- French `fr`
+- Polish `po`
+- Korean `ko`
+- Simplified Chinese `zh`
+- Ukrainian `uk`
 
 Trait coloration is based on your Obsidian app's display language.  If your selected language is not supported, the plugin falls back to English.
 
