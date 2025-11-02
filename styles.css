@@ -60,6 +60,7 @@
 	--pf2e-table-header: rgb(0, 42, 23);
 	--pf2e-table-even: rgba(173, 123, 0, 0.122);
 	--pf2e-table-odd: rgba(176, 125, 0, 0.216);
+	--pf2e-header-font: DIN-Rundschrift-Mittel, Roboto, var(--default-font);
 }
 
 .block-language-pf2e-stats {
@@ -85,7 +86,7 @@
 
 .pf2e-statblock h1, .pf2e-statblock h2 {
 	text-transform: uppercase;
-	font-family: DIN-Rundschrift-Mittel;
+	font-family: var(--pf2e-header-font);
 	font-weight: normal;
 	font-size: calc(var(--font-text-size) * 1.4);
 	line-height: 1.2rem;
@@ -106,7 +107,7 @@
 }
 
 .pf2e-statblock h3 {
-	font-family: DIN-Rundschrift-Mittel;
+	font-family: var(--pf2e-header-font);
 	text-transform: uppercase;
 	line-height: 1.5;
 	white-space: nowrap;
@@ -149,7 +150,7 @@
 }
 
 .pf2e-statblock mark {
-	font-family: DIN-Rundschrift-Mittel;
+	font-family: var(--pf2e-header-font);
 	text-transform: uppercase;
 	color: white !important;
 	background: magenta;

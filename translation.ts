@@ -82,9 +82,11 @@ const esTranslations = new Map<string, string>([
 // Russian
 const ruTranslations = new Map<string, string>([
 		["крошечный", "tiny"],
-		["маленький", "small"],
+		["маленький", "tiny"],
+		["небольшой", "small"],
 		["средний", "medium"],
 		["большой", "large"],
+		["крупный", "large"],
 		["огромный", "huge"],
 		["исполинский", "gargantuan"],
 		["пд", "lg"],
@@ -97,7 +99,8 @@ const ruTranslations = new Map<string, string>([
 		["нз", "ne"],
 		["хз", "ce"],
 		["деревня", "village"],
-		["город", "town"],
+		["посёлок", "town"],
+		["город", "city"],
 		["крупный город", "city"],
 		["мегаполис", "metropolis"],
 		["необычный", "uncommon"],
