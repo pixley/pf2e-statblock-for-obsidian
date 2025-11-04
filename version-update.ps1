@@ -7,7 +7,8 @@
 param(
     [switch]$major = $false,
     [switch]$minor = $false,
-    [switch]$patch = $false
+    [switch]$patch = $false,
+    [switch]$git-push = $false
 )
 
 # User must specify how the version is being incremented
@@ -131,8 +132,13 @@ git add "./package.json"
 npm run version		# Updates manifest.json and versions.json to match and also stages them
 git commit -m "Version updated to $new_version"
 git tag -a $new_version -m "$new_version"
-git push
-git push origin $new_version
 
-Write-Output "Version update complete and submitted!"
+if ($git-push)
+{
+    git push
+    git push origin $new_version
+    Write-Output "Pushed version update to Git remote."
+}
+
+Write-Output "Version update complete!"
 Exit 0
