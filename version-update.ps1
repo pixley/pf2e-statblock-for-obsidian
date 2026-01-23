@@ -8,7 +8,7 @@ param(
     [switch]$major = $false,
     [switch]$minor = $false,
     [switch]$patch = $false,
-    [switch]$git-push = $false
+    [switch]$push = $false
 )
 
 # User must specify how the version is being incremented

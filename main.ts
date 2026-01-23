@@ -417,6 +417,12 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 							break;
 						}
 						case "InlineCode": {
+							// don't touch inline code that isn't intended to be an action
+							if (codeBlock.codeText.charAt(node.from + 1) !== "[") {
+								elementClass += "-nonActionCode"
+								break;
+							}
+
 							elementClass += "-actionSource"
 							startBias = 2;
 							allowChildParse = false;
@@ -425,6 +431,7 @@ const statBlockLiveUpdateField = StateField.define<DecorationSet>({
 								return false;
 							}
 							// in the context of the node, the actual action text is flanked by "`[" and "]`"
+							// but we still want the brackets
 							const actionText = codeBlock.codeText.slice(node.from + 1, node.to - 1);
 							// we want to inject an action icon after the code block
 							decorationInfos.push(new DecorationInfo(nodeEnd, nodeEnd, Decoration.widget({
@@ -538,6 +545,14 @@ function pf2eStatsCodeBlockProcessor(source: string, element: HTMLElement, conte
 		}
 	}
 
+	const codeInlines: HTMLCollection = statblockElement.getElementsByTagName("code");
+	for (let i: number = 0; i < codeInlines.length; i++) {
+		const codeInline: HTMLElement = codeInlines[i] as HTMLElement;
+		if (codeInline.innerText.startsWith("[") && codeInline.innerText.endsWith("]")) {
+			codeInline.classList.add("action-icon");
+		}
+	}
+
 	// apply special indentation styling for <p> and <ul> elements
 	applyIndentation(statblockElement, element);
 
@@ -551,17 +566,19 @@ export default class PF2StatPlugin extends Plugin {
 	override async onload() {
 		// ============
 		// Handles full rendering of the statblock in reading mode
+		// The sortOrder is set to -1 in order to run before the Dice Roller plugin
+		// If someone has a better way to prevent the conflict, I'm all ears
 		// ============
 		this.registerMarkdownCodeBlockProcessor("pf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
 				pf2eStatsCodeBlockProcessor(source, element, context, this, false);
-			}
+			}, -1
 		);
 		
 		this.registerMarkdownCodeBlockProcessor("sf2e-stats",
 			(source: string, element: HTMLElement, context: MarkdownPostProcessorContext) => {
 				pf2eStatsCodeBlockProcessor(source, element, context, this, true);
-			}
+			}, -1
 		);
 
 		// ensure that the live update applies its styling at highest precedence

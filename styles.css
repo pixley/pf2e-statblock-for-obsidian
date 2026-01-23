@@ -55,7 +55,7 @@
 	--pf2e-style-highlight: var(--color-cyan);
 	--pf2e-action-highlight: var(--color-blue);
 	--pf2e-error-highlight: var(--color-red);
-	--pf2e-language-override-highlight: var(--color-base-50);
+	--pf2e-language-override-highlight: var(--text-faded);
 	--pf2e-common-indent: 1rem;
 	--pf2e-table-header: rgb(0, 42, 23);
 	--pf2e-table-even: rgba(173, 123, 0, 0.122);
@@ -176,7 +176,7 @@
 	border-color: var(--sf2e-trait-border);
 }
 
-.pf2e-statblock code {
+.pf2e-statblock code.action-icon {
 	font-family: Pathfinder-Icons !important;
 	font-variant: normal;
 	font-weight: normal;
@@ -305,6 +305,10 @@
 
 .pf2e-statblock-live-actionSource {
 	color: var(--pf2e-action-highlight);
+}
+
+.pf2e-statblock-live-nonActionCode {
+	color: var(--text-muted);
 }
 
 .pf2e-statblock-live-action {
