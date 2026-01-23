@@ -133,7 +133,7 @@ npm run version		# Updates manifest.json and versions.json to match and also sta
 git commit -m "Version updated to $new_version"
 git tag -a $new_version -m "$new_version"
 
-if ($git-push)
+if ($push)
 {
     git push
     git push origin $new_version
