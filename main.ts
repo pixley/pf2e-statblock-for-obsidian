@@ -181,6 +181,11 @@ function applyIndentation(statblockElement: HTMLElement, rootElement: HTMLElemen
 						// with negative indentation
 						currentSubPara.classList.add("pf2e-statblock-subentry");
 						console.debug("Start-of-line is bold.");
+					} else if (childNode instanceof Element && childElement.tagName === "CODE" &&
+						childElement.classList.contains("action-icon")) {
+						// Lines that start with an action icon use the same hanging indentation as bold subentries.
+						currentSubPara.classList.add("pf2e-statblock-subentry");
+						console.debug("Start-of-line is an action icon.");
 					} else if (currentSubPara.previousElementSibling != null &&
 						currentSubPara.previousElementSibling.tagName === "P" &&
 						!currentSubPara.previousElementSibling.classList.contains("pf2e-statblock-subentry") &&
