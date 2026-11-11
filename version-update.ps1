@@ -131,10 +131,12 @@ Set-Content -Path $package_json_path -Value $package_json_contents
 git add "./package.json"
 npm run version		# Updates manifest.json and versions.json to match and also stages them
 git commit -m "Version updated to $new_version"
-git tag -a $new_version -m "$new_version"
 
 if ($push)
 {
+    # Github client doesn't like tags made via CLI
+    git tag -a $new_version -m "$new_version"
+
     git push
     git push origin $new_version
     Write-Output "Pushed version update to Git remote."
