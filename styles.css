@@ -134,11 +134,11 @@
 	color: var(--text-normal);
 }
 
-.pf2e-statblock-2nd-paragraph p {
+p.pf2e-statblock-2nd-paragraph {
 	text-indent: var(--pf2e-common-indent);
 }
 
-.pf2e-statblock-subentry p {
+p.pf2e-statblock-subentry {
 	/* For inverse indent for degrees of success, activations, and the like */
 	text-indent: calc(-1 * var(--pf2e-common-indent));
 	padding-left: var(--pf2e-common-indent);
